@@ -3,7 +3,7 @@ package com.mtwoo.alpha.controller;
 import com.mtwoo.alpha.api.request.LoginRequest;
 import com.mtwoo.alpha.api.request.SignUpRequest;
 import com.mtwoo.alpha.api.response.JwtAuthenticationResponse;
-import com.mtwoo.alpha.api.response.UserResponse;
+import com.mtwoo.alpha.api.response.SignUpResponse;
 import com.mtwoo.alpha.security.JwtProvider;
 import com.mtwoo.alpha.dao.UserRepository;
 import com.mtwoo.alpha.domain.User;
@@ -27,29 +27,22 @@ import java.net.URI;
 public class LoginController {
 
     @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Autowired
     UserService userService;
 
     @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
     JwtProvider jwtProvider;
 
-    //@GetMapping("/hello")
-    @GetMapping("/")
-    public String getUser(){
-        System.out.println("?12");
-        return userService.getUserByEmail("a@gmail.com").getEmail();
-    }
-
     @PostMapping("/signin")
-    public ResponseEntity<?>  authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken t = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(t);
 
@@ -57,25 +50,23 @@ public class LoginController {
 
         String jwt = jwtProvider.provideToken(authentication);
 
-
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
-}
+    }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest newUser){
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest newUser) {
 
-        if(userRepository.existsByEmail(newUser.getEmail())){
-            return new ResponseEntity(new UserResponse(false, "Email used"), HttpStatus.BAD_REQUEST);
+        if (userRepository.existsByEmail(newUser.getEmail())) {
+            return new ResponseEntity(new SignUpResponse(false, "Email used"), HttpStatus.BAD_REQUEST);
         }
         User user = new User(newUser.getEmail(), passwordEncoder.encode(newUser.getPassword()));
-        //User user = new User(newUser.getEmail(), newUser.getPassword());
         User res = userRepository.save(user);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/api/users/{email}")
+                .path("/user?email={email}")
                 .buildAndExpand(res.getEmail()).toUri();
 
-        return ResponseEntity.created(uri).body(new UserResponse(true, "Sign up sucessfully"));
+        return ResponseEntity.created(uri).body(new SignUpResponse(true, "Sign up sucessfully"));
     }
 
 }
