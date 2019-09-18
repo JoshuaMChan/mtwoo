@@ -1,4 +1,4 @@
-package com.mtwoo.alpha.security;
+package com.mtwoo.alpha.config.security;
 
 import com.mtwoo.alpha.domain.User;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class UserPrincipal implements UserDetails {
 
     public static UserPrincipal create(User user){
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("approved"));
+        authorities.add(new SimpleGrantedAuthority("USER"));
         return new UserPrincipal(Long.valueOf(user.getId()), user.getEmail(), user.getPassword(), authorities);
     }
 

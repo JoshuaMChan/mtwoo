@@ -1,11 +1,9 @@
 package com.mtwoo.alpha.domain;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity(name = "user")
 @Data

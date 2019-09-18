@@ -8,5 +8,5 @@ import javax.validation.constraints.NotBlank;
 public class PostRequest {
     private String title;
     private String context;
-    private String userEmail;
+    private String email;
 }

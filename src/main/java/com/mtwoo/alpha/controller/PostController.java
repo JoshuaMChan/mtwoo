@@ -9,6 +9,7 @@ import com.mtwoo.alpha.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
+@Secured({"USER"})
 @RequestMapping("/post")
 public class PostController {
     @Autowired
@@ -32,8 +34,7 @@ public class PostController {
         Post p = new Post();
         p.setTitle(postRequest.getTitle());
         p.setContext(postRequest.getContext());
-        p.setUser(userService.getUserByEmail(postRequest.getUserEmail()));
-        System.out.println(p.getUser().getId());
+        p.setUser(userService.getUserByEmail(postRequest.getEmail()));
         postService.savePost(p);
         return ResponseEntity.ok(new PostResponse(true, "Posted Successfully."));
     }

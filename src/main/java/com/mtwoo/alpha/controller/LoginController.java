@@ -4,7 +4,7 @@ import com.mtwoo.alpha.api.request.LoginRequest;
 import com.mtwoo.alpha.api.request.SignUpRequest;
 import com.mtwoo.alpha.api.response.JwtAuthenticationResponse;
 import com.mtwoo.alpha.api.response.SignUpResponse;
-import com.mtwoo.alpha.security.JwtProvider;
+import com.mtwoo.alpha.config.security.JwtUtil;
 import com.mtwoo.alpha.dao.UserRepository;
 import com.mtwoo.alpha.domain.User;
 import com.mtwoo.alpha.service.UserService;
@@ -39,7 +39,7 @@ public class LoginController {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    JwtProvider jwtProvider;
+    JwtUtil jwtUtil;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -48,7 +48,7 @@ public class LoginController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = jwtProvider.provideToken(authentication);
+        String jwt = jwtUtil.provideToken(authentication);
 
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
