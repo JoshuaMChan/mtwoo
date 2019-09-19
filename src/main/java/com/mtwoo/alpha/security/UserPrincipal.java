@@ -1,4 +1,4 @@
-package com.mtwoo.alpha.config.security;
+package com.mtwoo.alpha.security;
 
 import com.mtwoo.alpha.domain.User;
 import lombok.AllArgsConstructor;

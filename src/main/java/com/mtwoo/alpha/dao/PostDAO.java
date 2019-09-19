@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
 
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostDAO extends JpaRepository<Post, Integer> {
     Post findByUserIdAndCreateDate(int userId, Date createdDate);
 }

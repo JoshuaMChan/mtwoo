@@ -1,10 +1,11 @@
 package com.mtwoo.alpha.config;
 
-import com.mtwoo.alpha.config.security.JwtAuthenticationFilter;
-import com.mtwoo.alpha.config.security.RegularUserDetailService;
+import com.mtwoo.alpha.security.JwtAuthenticationFilter;
+import com.mtwoo.alpha.security.RegularUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -59,11 +60,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/signin/**", "/user/signup/**")
+                .antMatchers("/api/auth/signin/**", "/api/auth/signup/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/api/post/**")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
-
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .authenticated()
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }

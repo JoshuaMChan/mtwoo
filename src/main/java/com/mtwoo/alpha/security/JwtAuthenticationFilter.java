@@ -1,4 +1,4 @@
-package com.mtwoo.alpha.config.security;
+package com.mtwoo.alpha.security;
 
 import com.mtwoo.alpha.utils.MyPrinter;
 import io.jsonwebtoken.JwtException;
@@ -28,7 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){return new JwtAuthenticationFilter();}
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -37,7 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if(jwt.startsWith("Bearer ")){
                     jwt = jwt.substring(7);
                     if (jwtUtil.validateToken(jwt)) {
-                        MyPrinter.print("Vaild!");
                         Long userId = jwtUtil.getUserIdFromToken(jwt);
                         UserDetails userDetails = regularUserDetailService.loadUserById(userId.intValue());
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

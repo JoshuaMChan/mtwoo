@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class SignUpResponse {
-    private boolean success;
-    private String msg;
+@AllArgsConstructor
+public class TagResponse {
+    private int id;
+    private String name;
 }

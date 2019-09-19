@@ -1,6 +1,6 @@
-package com.mtwoo.alpha.config.security;
+package com.mtwoo.alpha.security;
 
-import com.mtwoo.alpha.dao.UserRepository;
+import com.mtwoo.alpha.dao.UserDAO;
 import com.mtwoo.alpha.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,18 +13,18 @@ import javax.transaction.Transactional;
 @Service
 public class RegularUserDetailService implements UserDetailsService {
     @Autowired
-    UserRepository userRepository;
+    UserDAO userDAO;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email){
-        User user = userRepository.findByEmail(email);
+        User user = userDAO.findByEmail(email);
         return UserPrincipal.create(user);
     }
 
     @Transactional
     public UserDetails loadUserById(int id){
-        User user = userRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("Username" + id + " not found"));
+        User user = userDAO.findById(id).orElseThrow(()-> new UsernameNotFoundException("Username" + id + " not found"));
         return UserPrincipal.create(user);
     }
 }

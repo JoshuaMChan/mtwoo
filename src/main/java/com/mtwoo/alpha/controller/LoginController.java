@@ -3,9 +3,8 @@ package com.mtwoo.alpha.controller;
 import com.mtwoo.alpha.api.request.LoginRequest;
 import com.mtwoo.alpha.api.request.SignUpRequest;
 import com.mtwoo.alpha.api.response.JwtAuthenticationResponse;
-import com.mtwoo.alpha.api.response.SignUpResponse;
-import com.mtwoo.alpha.config.security.JwtUtil;
-import com.mtwoo.alpha.dao.UserRepository;
+import com.mtwoo.alpha.security.JwtUtil;
+import com.mtwoo.alpha.dao.UserDAO;
 import com.mtwoo.alpha.domain.User;
 import com.mtwoo.alpha.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/auth")
 public class LoginController {
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     UserService userService;
@@ -42,8 +36,12 @@ public class LoginController {
     JwtUtil jwtUtil;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken t = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+    }
+
+    private  ResponseEntity<JwtAuthenticationResponse> authenticateUser(String email, String password){
+        UsernamePasswordAuthenticationToken t = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(t);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -56,17 +54,14 @@ public class LoginController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest newUser) {
 
-        if (userRepository.existsByEmail(newUser.getEmail())) {
-            return new ResponseEntity(new SignUpResponse(false, "Email used"), HttpStatus.BAD_REQUEST);
+        if (userService.hasUserByEmail(newUser.getEmail())) {
+            return new ResponseEntity("Email used.", HttpStatus.CONFLICT);
         }
-        User user = new User(newUser.getEmail(), passwordEncoder.encode(newUser.getPassword()));
-        User res = userRepository.save(user);
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/user?email={email}")
-                .buildAndExpand(res.getEmail()).toUri();
 
-        return ResponseEntity.created(uri).body(new SignUpResponse(true, "Sign up sucessfully"));
+        User user = new User(newUser.getEmail(), passwordEncoder.encode(newUser.getPassword()));
+        userService.saveUser(user);
+
+        return authenticateUser(newUser.getEmail(), newUser.getPassword());
     }
 
 }

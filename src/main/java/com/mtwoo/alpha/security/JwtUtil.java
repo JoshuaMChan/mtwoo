@@ -1,4 +1,4 @@
-package com.mtwoo.alpha.config.security;
+package com.mtwoo.alpha.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

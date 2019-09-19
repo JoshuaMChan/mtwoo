@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostResponse {
-    private boolean success;
-    private String msg;
+    private int id;
+    private String title;
+    private String context;
+    private int user_id;
 }
